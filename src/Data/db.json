@@ -1,0 +1,22 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "name": "Alan",
+      "jobTitle": "frontend Developer",
+      "userRole": "admin",
+      "email": "alex@gmail.com",
+      "password": "1234",
+      "profilePhoto": "https://www.hindustantimes.com/ht-img/img/2023/09/07/1600x900/Jatinder-Singh---Panjab-University-student-council_1694122098281.jpg"
+    },
+    {
+      "id": 2,
+      "name": "aman",
+      "jobTitle": "React Developer",
+      "userRole": "user",
+      "email": "aman@gmail.com",
+      "password": "1234",
+      "profilePhoto": "https://www.hindustantimes.com/ht-img/img/2023/09/07/1600x900/Jatinder-Singh---Panjab-University-student-council_1694122098281.jpg"
+    }
+  ]
+}
