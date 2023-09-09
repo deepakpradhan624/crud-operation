@@ -13,7 +13,7 @@ export const GetAllUsers = () => {
   return (dispatch) => {
     dispatch(makeRequest());
     axios
-      .get("http://localhost:8000/user")
+      .get("https://crud-operation-render.onrender.com/user")
       .then((res) => {
         const _list = res.data;
         dispatch(successRequest(_list));
@@ -26,7 +26,7 @@ export const GetAllUsers = () => {
 export const GetUserbycode = (code) => {
   return (dispatch) => {
     axios
-      .get("http://localhost:8000/user/" + code)
+      .get("https://crud-operation-render.onrender.com/user/" + code)
       .then((res) => {
         const _obj = res.data;
         dispatch(getbycodeSuccess(_obj));
@@ -41,7 +41,7 @@ export const GetUserbycode = (code) => {
 export const CreateUser = (data) => {
   return (dispatch) => {
     axios
-      .post("http://localhost:8000/user", data)
+      .post("https://crud-operation-render.onrender.com/user", data)
       .then((res) => {
         dispatch(AddRequest(data));
         toast.success("User created successfully");
@@ -55,7 +55,7 @@ export const CreateUser = (data) => {
 export const UpdateUser = (data) => {
   return (dispatch) => {
     axios
-      .put("http://localhost:8000/user/" + data.id, data)
+      .put("https://crud-operation-render.onrender.com/user/" + data.id, data)
       .then((res) => {
         dispatch(UpdateRequest(data));
         toast.success("User updated successfully");
@@ -69,7 +69,7 @@ export const UpdateUser = (data) => {
 export const DeleteUser = (code) => {
   return (dispatch) => {
     axios
-      .delete("http://localhost:8000/user/" + code)
+      .delete("https://crud-operation-render.onrender.com/user/" + code)
       .then((res) => {
         dispatch(DeleteRequest(code));
         toast.success("User removed successfully");
