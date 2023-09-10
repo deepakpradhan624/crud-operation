@@ -13,16 +13,19 @@ import {
   DialogContent,
   Stack,
   TextField,
+  Input,
 } from "@mui/material";
 import {
   CreateUser,
   DeleteUser,
   GetAllUsers,
+  GetSeachResult,
   GetUserbycode,
   UpdateUser,
 } from "../Redux/ActionCreater";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { OpenPopup } from "../Redux/Action";
+import axios from "axios";
 
 const User = (props) => {
   const columns = [
@@ -42,8 +45,11 @@ const User = (props) => {
   const [userRole, setUserRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
   const [open, setOpen] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [edit, setEdit] = useState(false);
   const [title, setTitle] = useState("Create user");
@@ -63,6 +69,10 @@ const User = (props) => {
       clearstate();
     }
   }, [editobj]);
+
+  useEffect(() => {
+    if (searchQ == "") dispatch(GetAllUsers());
+  }, [searchQ]);
 
   const functionadd = () => {
     setEdit(false);
@@ -87,15 +97,24 @@ const User = (props) => {
       userRole,
       email,
       password,
+      confirmPass,
       profilePhoto,
     };
 
     if (edit) {
       dispatch(UpdateUser(_obj));
     } else {
-      dispatch(CreateUser(_obj));
+      if (password !== confirmPass) {
+        console.log("Password Doesn't match");
+      } else dispatch(CreateUser(_obj));
     }
     closepopup();
+  };
+
+  const handlePassword = (e) => {
+    const { name, value } = e.target;
+    if (name == "password") setPassword(value);
+    else setConfirmPass(value);
   };
 
   const handleEdit = (code) => {
@@ -107,6 +126,22 @@ const User = (props) => {
   const handleDelete = (code) => {
     if (window.confirm("Do you want to delete?")) {
       dispatch(DeleteUser(code));
+    }
+  };
+
+  const delaySearch = () => {
+    dispatch(GetSeachResult(searchQ, setLoading));
+    setTimeout(() => {
+      // setLoading(false);
+    }, 10000);
+  };
+
+  const handleSearch = (e) => {
+    const { name, value } = e.target;
+    setSearchQ(value);
+    if (searchQ.length > 2) {
+      setLoading(true);
+      delaySearch();
     }
   };
 
@@ -127,70 +162,90 @@ const User = (props) => {
     <>
       <div>
         <h1>User List</h1>
+
+        <Input
+          sx={{ marginLeft: "2%" }}
+          placeholder="Search"
+          label="Search"
+          onChange={handleSearch}
+          value={searchQ}
+        />
       </div>
       <div>
         <Paper sx={{ margin: "1%" }}>
           <div style={{ margin: "1%" }}>
-            <Button onClick={functionadd} variant="contained">
+            <Button
+              sx={{ marginLeft: "90%" }}
+              onClick={functionadd}
+              variant="contained"
+            >
               Add New
             </Button>
           </div>
           <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow style={{ backgroundColor: "teal" }}>
-                  {columns.map((column) => {
-                    return (
-                      <TableCell style={{ color: "white" }} key={column.id}>
-                        {column.name}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {props.userstate.userlist &&
-                  props.userstate.userlist.map((row, i) => {
-                    return (
-                      <TableRow key={i}>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.jobTitle}</TableCell>
-                        <TableCell>{row.userRole}</TableCell>
-                        <TableCell>{row.email}</TableCell>
-                        <TableCell>
-                          <img
-                            style={{ width: "15%" }}
-                            src={row.profilePhoto}
-                            alt="error"
-                          />
-                        </TableCell>
-                        <TableCell sx={{ display: "flex" }}>
-                          <Button
-                            onClick={(e) => {
-                              handleEdit(row.id);
-                            }}
-                            sx={{ margin: "1%" }}
-                            variant="contained"
-                            color="primary"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            onClick={(e) => {
-                              handleDelete(row.id);
-                            }}
-                            variant="contained"
-                            color="error"
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
+            {loading ? (
+              <>
+                <p>....Loading</p>
+              </>
+            ) : (
+              <>
+                <Table>
+                  <TableHead>
+                    <TableRow style={{ backgroundColor: "teal" }}>
+                      {columns.map((column) => {
+                        return (
+                          <TableCell style={{ color: "white" }} key={column.id}>
+                            {column.name}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {props.userstate.userlist &&
+                      props.userstate.userlist.map((row, i) => {
+                        return (
+                          <TableRow key={i}>
+                            <TableCell>{row.id}</TableCell>
+                            <TableCell>{row.name}</TableCell>
+                            <TableCell>{row.jobTitle}</TableCell>
+                            <TableCell>{row.userRole}</TableCell>
+                            <TableCell>{row.email}</TableCell>
+                            <TableCell>
+                              <img
+                                style={{ width: "15%" }}
+                                src={row.profilePhoto}
+                                alt="error"
+                              />
+                            </TableCell>
+                            <TableCell sx={{ display: "flex" }}>
+                              <Button
+                                onClick={(e) => {
+                                  handleEdit(row.id);
+                                }}
+                                sx={{ margin: "1%" }}
+                                variant="contained"
+                                color="primary"
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                onClick={(e) => {
+                                  handleDelete(row.id);
+                                }}
+                                variant="contained"
+                                color="error"
+                              >
+                                Delete
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </>
+            )}
           </TableContainer>
         </Paper>
         <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
@@ -219,6 +274,7 @@ const User = (props) => {
                   }}
                   variant="outlined"
                   label="Job Title"
+                  disabled={edit}
                 ></TextField>
                 <TextField
                   required
@@ -229,6 +285,7 @@ const User = (props) => {
                   }}
                   variant="outlined"
                   label="User Role"
+                  disabled={edit}
                 ></TextField>
                 <TextField
                   required
@@ -244,12 +301,33 @@ const User = (props) => {
                   required
                   error={name.length === 0}
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
+                  name="password"
+                  onChange={handlePassword}
                   variant="outlined"
                   label="Password"
+                  type="password"
                 ></TextField>
+                <TextField
+                  required
+                  error={confirmPass !== password}
+                  value={confirmPass}
+                  name="confirmPassword"
+                  onChange={handlePassword}
+                  variant="outlined"
+                  label="Confirm Password"
+                  type="password"
+                ></TextField>
+                <p
+                  style={{
+                    display: [
+                      password !== confirmPass && password.length > 0
+                        ? ""
+                        : "none",
+                    ],
+                  }}
+                >
+                  Passwod doesn't match
+                </p>
                 <TextField
                   required
                   error={name.length === 0}

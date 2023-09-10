@@ -9,12 +9,13 @@ import {
   successRequest,
 } from "./Action";
 import axios from "axios";
-export const GetAllUsers = () => {
+export const GetAllUsers = (setLoading) => {
   return (dispatch) => {
     dispatch(makeRequest());
     axios
       .get("https://crud-operation-render.onrender.com/user")
       .then((res) => {
+        setLoading && setLoading(false);
         const _list = res.data;
         dispatch(successRequest(_list));
       })
@@ -23,6 +24,22 @@ export const GetAllUsers = () => {
       });
   };
 };
+export const GetSeachResult = (quer, setLoading) => {
+  return (dispatch) => {
+    dispatch(makeRequest());
+    axios
+      .get(`https://crud-operation-render.onrender.com/user?q=${quer}`)
+      .then((res) => {
+        setLoading && setLoading(false);
+        const _list = res.data;
+        dispatch(successRequest(_list));
+      })
+      .catch((err) => {
+        dispatch(failRequest(err.message));
+      });
+  };
+};
+
 export const GetUserbycode = (code) => {
   return (dispatch) => {
     axios

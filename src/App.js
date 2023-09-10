@@ -14,7 +14,7 @@ function App() {
       <Route path='/' element={<User/>}></Route>
      </Routes>
      </BrowserRouter>
-     <ToastContainer position="top-left"></ToastContainer>
+     <ToastContainer position="top-right"></ToastContainer>
       </Provider>
     
     </div>
